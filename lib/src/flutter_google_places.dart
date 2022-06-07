@@ -388,7 +388,7 @@ class PredictionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(Icons.location_on),
-      title: Text(prediction.description!),
+      title: Text('${prediction.description!.split(',')[1]}, ${prediction.description!.split(',')[2]} ',),
       onTap: () {
         if (onTap != null) {
           onTap!(prediction);
