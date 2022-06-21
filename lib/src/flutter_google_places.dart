@@ -29,6 +29,7 @@ class PlacesAutocompleteWidget extends StatefulWidget {
   final int debounce;
   final InputDecoration? decoration;
   final Function()? onPressManually;
+  final bool? enterManually;
 
   /// optional - sets 'proxy' value in google_maps_webservice
   ///
@@ -66,6 +67,7 @@ class PlacesAutocompleteWidget extends StatefulWidget {
     this.debounce = 300,
     this.decoration,
     this.onPressManually,
+    this.enterManually = true
   }) : super(key: key);
 
   @override
@@ -163,12 +165,14 @@ class _PlacesAutocompleteOverlayState extends PlacesAutocompleteState {
           mainAxisSize: MainAxisSize.min,
           children: [
             _response != null &&_response!.predictions.isEmpty ? Container(
-              padding: EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               child: Column(
                 children: [
-                  Text("No results found"),
-                  SizedBox(height: 16),
-                  ElevatedButton(onPressed: widget.onPressManually, child: Text("Enter manually"))
+                  const Center(child: Text("No results found")),
+                  widget.enterManually != null && !widget.enterManually! ? Container() : Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: ElevatedButton(onPressed: widget.onPressManually, child: Text("Enter manually")),
+                  )
                 ],
               ),
             ) : Container(),
@@ -501,7 +505,6 @@ abstract class PlacesAutocompleteState extends State<PlacesAutocompleteWidget> {
   @mustCallSuper
   void onResponse(PlacesAutocompleteResponse? res) {
     if (!mounted) return;
-
     setState(() {
       _response = res;
       _searching = false;
@@ -532,6 +535,7 @@ class PlacesAutocomplete {
     InputDecoration? decoration,
     String startText = "",
     Function()? onPressManually,
+    bool? enterManually,
   }) {
     final builder = (BuildContext ctx) => PlacesAutocompleteWidget(
           apiKey: apiKey,
@@ -554,6 +558,7 @@ class PlacesAutocomplete {
           startText: startText,
           decoration: decoration,
           onPressManually: onPressManually,
+        enterManually: enterManually,
         );
 
     if (mode == Mode.overlay) {
